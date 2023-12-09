@@ -16,8 +16,12 @@ import {
 } from "@/components/ui/form";
 
 import Loader from "@/components/shared/Loader";
+import { createNewAccount } from "@/lib/appwrite/api";
+import { useToast } from "@/components/ui/use-toast";
 
 const SignupForm = () => {
+  const { toast } = useToast();
+
   const isLoading = false;
 
   // 1. Define your form.
@@ -32,12 +36,14 @@ const SignupForm = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof SignupValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    // const newUser = await createUserAccount(values);
+  async function onSubmit(values: z.infer<typeof SignupValidation>) {
+    const newUser = await createNewAccount(values);
 
-    console.log(values);
+    if (!newUser) {
+      return toast({
+        title: "Sign up failed. Please try again",
+      });
+    }
   }
 
   return (
@@ -54,8 +60,7 @@ const SignupForm = () => {
 
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-5 w-full mt-4"
-        >
+          className="flex flex-col gap-5 w-full mt-4">
           <FormField
             control={form.control}
             name="name"
@@ -127,8 +132,7 @@ const SignupForm = () => {
             Already have an account?
             <Link
               to="/sign-in"
-              className="text-primary-500 text-small-semibold ml-1"
-            >
+              className="text-primary-500 text-small-semibold ml-1">
               Log-in
             </Link>
           </p>
