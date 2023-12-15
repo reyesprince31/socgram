@@ -7,7 +7,10 @@ import {
 import {
   createNewAccount,
   createPost,
+  deleteSavedPost,
   getRecentPosts,
+  likePost,
+  savePost,
   signInAccount,
   signOutAccount,
 } from "../appwrite/api";
@@ -49,5 +52,30 @@ export const useGetRecentPosts = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
     queryFn: getRecentPosts,
+  });
+};
+
+export const useLikePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      postId,
+      likesArray,
+    }: {
+      postId: string;
+      likesArray: string[];
+    }) => likePost(postId, likesArray),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_POSTS] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+    },
   });
 };
