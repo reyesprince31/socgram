@@ -75,9 +75,6 @@ const PostForm = ({ post, action }: PostFormProps) => {
     }
 
     navigate("/");
-    // // Do something with the form values.
-    // // ✅ This will be type-safe and validated.
-    // console.log(values);
   }
 
   return (
@@ -160,8 +157,10 @@ const PostForm = ({ post, action }: PostFormProps) => {
           </Button>
           <Button
             type="submit"
-            className="shad-button_primary whitespace-nowrap">
-            Post
+            className="shad-button_primary whitespace-nowrap"
+            disabled={isLoadingCreate || isLoadingUpdate}>
+            {(isLoadingCreate || isLoadingUpdate) && "Loading..."}
+            {action} Post
           </Button>
         </div>
       </form>
